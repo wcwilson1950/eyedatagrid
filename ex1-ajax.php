@@ -1,5 +1,6 @@
 <?php
-require 'class.eyedatagrid.inc.php';
+require_once 'vendor/autoload.php';
 
+use Fgsl\Eyedatagrid\EyeDataFactory;
 // Just call one function and your table is now totally Ajax enabled!
-EyeDataGrid::useAjaxTable('ex1.php');
+EyeDataFactory::useAjaxTable('ex1.php');

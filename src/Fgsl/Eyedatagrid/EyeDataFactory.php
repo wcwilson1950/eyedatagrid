@@ -33,4 +33,9 @@ class EyeDataFactory
         $config = require 'config/sqlite.local.php';
         return new EyeSqlLiteAdap($config);
     }
+    public static function useAjaxTable($url, $type = self::SQLITE)
+    {
+        $x = self::create($type);
+        $x->useAjaxTable($url);
+    }
 }

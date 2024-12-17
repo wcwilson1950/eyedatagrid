@@ -740,7 +740,6 @@ class EyeDataGrid
                 $last = $line; // Last line
                 if ($first == 0)
                     $first = $line; // First line
-
                 if ($this->show_row_number)
                     echo '<td class="tbl-row-num">' . $line . '</td>';
 

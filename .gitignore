@@ -3,5 +3,6 @@
 .project
 .settings/
 config/local.php
+config/sqlite.local.ßphp
 vendor/
 data/
