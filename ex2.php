@@ -11,6 +11,7 @@ $gridConfig = [
         'table' => 'people',
         'where' => 'Id > 2'
     ],
+    'filters' => true,
     'columns' => [
         'FirstName' => 'First Name',
         'LastName' => 'Last Name',

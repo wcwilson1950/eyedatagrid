@@ -48,6 +48,9 @@ class EyeDataFactory
         list($fields, $table, $where) = array_values($gridConfig['query']);
         $grid->setQuery($fields, $table, $where);
 
+        if (isset($gridConfig['filters']) && $gridConfig['filters']) {
+            $grid->allowFilters();
+        }
         foreach ($gridConfig['columns'] as $field => $settings) {
             $grid->setColumn($field, $settings);
         }
