@@ -281,6 +281,27 @@ class EyeDataGrid
         $this->type[$column] = array($type, $criteria, $criteria_2);
     }
 
+    public function setColumn($column, $settings)
+    {
+        if ($settings === false) {
+            $this->hideColumn($column);
+        } elseif (is_array($settings)) {
+            if ($settings['type'] == self::TYPE_DATE) {
+                $format = (isset($settings['format'])) ? $settings['format'] : '';
+                $filter = (isset($settings['filter'])) ? $settings['filter'] : '';
+                $this->setColumnType($column, $settings['type'], $format, $filter);
+            } else if ($settings['type'] == self::TYPE_ARRAY) {
+                $this->setColumnType($column, $settings['type'], $settings['values']);
+            } else if ($settings['type'] == self::TYPE_PERCENT) {
+                $this->setColumnType($column, $settings['type'], $settings['filter'], $settings['colors']);
+            } else {
+                $this->setColumnType($column, $settings['type'], $settings['criteria'], $settings['criteria_2']);
+            }
+        } else {
+            $this->setColumnHeader($column, $settings);
+        }
+    }
+
     /**
      * Sets the maximum amount of rows per page
      *

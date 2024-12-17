@@ -2,6 +2,10 @@
 
 namespace Fgsl\Eyedatagrid;
 
+use Fgsl\Eyedatagrid\EyeMysqlAdap;
+use Fgsl\Eyedatagrid\EyeSqlLiteAdap;
+use Fgsl\Eyedatagrid\EyeDataGrid;
+
 class EyeDataFactory
 {
     const SQLITE = 'sqlite';
@@ -37,5 +41,17 @@ class EyeDataFactory
     {
         $x = self::create($type);
         $x->useAjaxTable($url);
+    }
+    public static function build(array $gridConfig)
+    {
+        $grid = self::create($gridConfig['type']);
+        list($fields, $table, $where) = array_values($gridConfig['query']);
+        $grid->setQuery($fields, $table, $where);
+
+        foreach ($gridConfig['columns'] as $field => $settings) {
+            $grid->setColumn($field, $settings);
+        }
+
+        return $grid;
     }
 }

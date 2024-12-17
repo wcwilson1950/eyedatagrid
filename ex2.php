@@ -4,26 +4,54 @@ use Fgsl\Eyedatagrid\EyeDataFactory;
 use Fgsl\Eyedatagrid\EyeDataGrid;
 
 require 'vendor/autoload.php';
+$gridConfig = [
+    'type' => EyeDataFactory::SQLITE,
+    'query' => [
+        'fields' => '*',
+        'table' => 'people',
+        'where' => 'Id > 2'
+    ],
+    'columns' => [
+        'FirstName' => 'First Name',
+        'LastName' => 'Last Name',
+        'Id' => false, // Hide ID Column
+        'BirthDate' => [
+            'header' => 'Birth Date',
+            'type' => EyeDataGrid::TYPE_DATE,
+            'format' => 'M d, Y',
+            'filter' => true
+        ],
+        'Gender' => [
+            'type' => EyeDataGrid::TYPE_ARRAY,
+            'values' => ['m' => 'Male', 'f' => 'Female']
+        ],
+        'Done' => [
+            'type' => EyeDataGrid::TYPE_PERCENT,
+            'filter' => false,
+            'colors' => ['Back' => '#c3daf9', 'Fore' => 'black']
+        ]
+    ]
+];
 
-$x = EyeDataFactory::create(EyeDataFactory::SQLITE);
+$x = EyeDataFactory::build($gridConfig);
 
-// Set the query
-$x->setQuery("*", "people", "Id", "Id > 2");
+// // Set the query
+// $x->setQuery("*", "people", "Id", "Id > 2");
 
-// Allows filters
-$x->allowFilters();
+// // Allows filters
+// $x->allowFilters();
 
-// Change headers text
-$x->setColumnHeader('FirstName', 'First Name');
-$x->setColumnHeader('LastName', 'Last Name');
+// // Change headers text
+// $x->setColumnHeader('FirstName', 'First Name');
+// $x->setColumnHeader('LastName', 'Last Name');
 
-// Hide ID Column
-$x->hideColumn('Id');
+// // Hide ID Column
+// $x->hideColumn('Id');
 
-// Change column type
-$x->setColumnType('BirthDate', EyeDataGrid::TYPE_DATE, 'M d, Y', true); // Change the date format
-$x->setColumnType('Gender', EyeDataGrid::TYPE_ARRAY, array('m' => 'Male', 'f' => 'Female')); // Convert db values to something better
-$x->setColumnType('Done', EyeDataGrid::TYPE_PERCENT, false, array('Back' => '#c3daf9', 'Fore' => 'black'));
+// // Change column type
+// $x->setColumnType('BirthDate', EyeDataGrid::TYPE_DATE, 'M d, Y', true); // Change the date format
+// $x->setColumnType('Gender', EyeDataGrid::TYPE_ARRAY, array('m' => 'Male', 'f' => 'Female')); // Convert db values to something better
+// $x->setColumnType('Done', EyeDataGrid::TYPE_PERCENT, false, array('Back' => '#c3daf9', 'Fore' => 'black'));
 ?>
 <html>
 
