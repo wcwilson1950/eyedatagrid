@@ -1,12 +1,12 @@
 <?php
-require 'class.eyemysqladap.inc.php';
-require 'class.eyedatagrid.inc.php';
 
-// Load the database adapter
-$db = new EyeMySQLAdap('localhost', 'root', '', 'codes');
+use Fgsl\Eyedatagrid\EyeDataFactory;
+use Fgsl\Eyedatagrid\EyeDataGrid;
 
-// Load the datagrid class
-$x = new EyeDataGrid($db);
+require 'vendor/autoload.php';
+
+// Load the grid
+$x = EyeDataFactory::create(EyeDataFactory::SQLITE);
 
 // Set the query
 $x->setQuery("*", "people", 'Id');
@@ -54,25 +54,28 @@ function returnSomething($lastname)
 }
 $x->setColumnType('LastName', EyeDataGrid::TYPE_FUNCTION, 'returnSomething', '%LastName%');
 
-if (EyeDataGrid::isAjaxUsed())
-{
+if (EyeDataGrid::isAjaxUsed()) {
 	$x->printTable();
 	exit;
 }
 ?>
 <html>
+
 <head>
-<title>EyeDataGrid Example 5</title>
-<link href="table.css" rel="stylesheet" type="text/css">
+    <title>EyeDataGrid Example 5</title>
+    <link href="table.css" rel="stylesheet" type="text/css">
 </head>
+
 <body>
-<h1>Everything</h1>
-<ul>
-	<li>Here we have a little of everything. Ajax, filters, ordering, custom and standard controls, pagination, column types of link, array mapping, date, function, etc.</li>
-</ul>
-<?php
-// Print the table
-EyeDataGrid::useAjaxTable();
-?>
+    <h1>Everything</h1>
+    <ul>
+        <li>Here we have a little of everything. Ajax, filters, ordering, custom and standard controls, pagination,
+            column types of link, array mapping, date, function, etc.</li>
+    </ul>
+    <?php
+	// Print the table
+	$x->useAjaxTable();
+	?>
 </body>
+
 </html>

@@ -1,5 +1,7 @@
+.vscode/
 .buildpath
 .project
 .settings/
 config/local.php
 vendor/
+data/

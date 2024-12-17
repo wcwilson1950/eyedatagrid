@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Instruction to run this sample:
  * 
@@ -7,34 +8,32 @@
  * fill connection parameters according created database
  */
 
-use Fgsl\Eyedatagrid\EyeMySQLAdap;
+use Fgsl\Eyedatagrid\EyeDataFactory;
+use Fgsl\Eyedatagrid\EyeSqlLiteAdap;
 use Fgsl\Eyedatagrid\EyeDataGrid;
 
 require 'vendor/autoload.php';
 
-// 
-$config = require 'config/local.php';
-
-// Load the database adapter
-$db = new EyeMySQLAdap($config['host'], $config['user'], $config['password'],$config['db']);
-
-// Load the datagrid class
-$x = new EyeDataGrid($db);
+$x = EyeDataFactory::create(EyeDataFactory::SQLITE);
 
 // Set the query
 $x->setQuery("*", "people");
 ?>
+<!doctype html>
 <html>
+
 <head>
-<title>EyeDataGrid Example 1</title>
-<link href="table.css" rel="stylesheet" type="text/css">
+    <title>EyeDataGrid Example 1</title>
+    <link href="table.css" rel="stylesheet" type="text/css">
 </head>
+
 <body>
-<h1>Basic Datagrid</h1>
-<p>This is a basic example of the datagrid</p>
-<?php
-// Print the table
-$x->printTable();
-?>
+    <h1>Basic Datagrid</h1>
+    <p>This is a basic example of the datagrid</p>
+    <?php
+    // Print the table
+    $x->printTable();
+    ?>
 </body>
+
 </html>

@@ -1,5 +1,7 @@
 <?php
+
 namespace Fgsl\Eyedatagrid;
+
 /**
  * EyeMySQLAdap
  * MySQL database adapter
@@ -15,7 +17,7 @@ namespace Fgsl\Eyedatagrid;
  * @link       https://github.com/fgsl/eyedatagrid
  */
 
-class EyeMySQLAdap
+class EyeMySQLAdap implements EyeSQLAdaptorInterface
 {
     private $host, $user, $pass, $db_name;
 
@@ -53,20 +55,20 @@ class EyeMySQLAdap
      * @param string $user Database user
      * @param string $password Database password
      * @param string $db Database name
-     * @param boolean $persistant Is persistant connection
+     * @param boolean $persistent Is persistent connection
      * @param  boolean $connect_now Connect now
      * @return void
      */
-    public function __construct($host, $user, $password, $db, $persistant = true, $connect_now = true)
+    public function __construct($config)
     {
-        $this->host = $host; // Host address
-        $this->user = $user;    // User
-        $this->pass = $password;    // Password
-        $this->db_name = $db;    // Database
+        $this->host = $config['host']; // Host address
+        $this->user = $config['user'];    // User
+        $this->pass = $config['password'];    // Password
+        $this->db_name = $config['db'];    // Database
 
-        if ($connect_now)
-            $this->connect($persistant);
-
+        if ((isset($config['connect_now']) && $config['connect_now'] == true) || !isset($config['connect_now']))
+            $persistent = (isset($config['persistent']) && $config['persistent'] == true) ? true : false;
+        $this->connect($persistent);
         return;
     }
 
@@ -83,7 +85,7 @@ class EyeMySQLAdap
     /**
      * Connect to the database
      *
-     * @param boolean $persist Is persistant connection
+     * @param boolean $persist Is persistent connection
      * @return boolean
      */
     public function connect($persist = true)
@@ -96,8 +98,7 @@ class EyeMySQLAdap
         if (!$link)
             \trigger_error('Could not connect to the database.', E_USER_ERROR);
 
-        if ($link)
-        {
+        if ($link) {
             $this->link = $link;
             if (\mysqli_select_db($link, $this->db_name))
                 return true;
@@ -137,9 +138,9 @@ class EyeMySQLAdap
     {
         if (count($values) < 0)
             return false;
-            
+
         $fields = array();
-        foreach($values as $field => $val)
+        foreach ($values as $field => $val)
             $fields[] = "`" . $field . "` = '" . $this->escapeString($val) . "'";
 
         $where = ($where) ? " WHERE " . $where : '';
@@ -162,8 +163,8 @@ class EyeMySQLAdap
     {
         if (count($values) < 0)
             return false;
-        
-        foreach($values as $field => $val)
+
+        foreach ($values as $field => $val)
             $values[$field] = $this->escapeString($val);
 
         if ($this->query("INSERT INTO `" . $table . "`(`" . implode(array_keys($values), "`, `") . "`) VALUES ('" . implode($values, "', '") . "')"))
@@ -193,8 +194,7 @@ class EyeMySQLAdap
 
         $this->query("SELECT " . $fields . " FROM " . $table . $where . $orderby . $limit);
 
-        if ($this->countRows() > 0)
-        {
+        if ($this->countRows() > 0) {
             $rows = array();
 
             while ($r = $this->fetchAssoc())
@@ -220,7 +220,7 @@ class EyeMySQLAdap
 
         return $result[0];
     }
-    
+
     /**
      * Selects one value from one row
      *
@@ -315,11 +315,11 @@ class EyeMySQLAdap
     {
         $names = [];
         $result = $query;
-        if (!$query instanceof \mysqli_result){
+        if (!$query instanceof \mysqli_result) {
             $result = $this->query($query);
         }
         $finfo = $result->fetch_fields();
-        foreach($finfo as $val){
+        foreach ($finfo as $val) {
             $names[] = $val->name;
         }
         return $names;
@@ -428,9 +428,9 @@ class EyeMySQLAdap
      */
     private function resCalc($result)
     {
-        if ($result == false){
+        if ($result == false) {
             $result = $this->result;
-        } else if (!$result instanceof \mysqli_result){
+        } else if (!$result instanceof \mysqli_result) {
             $result = $this->query($result);
         }
 

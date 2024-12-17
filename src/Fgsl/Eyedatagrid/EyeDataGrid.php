@@ -1,5 +1,7 @@
 <?php
+
 namespace Fgsl\Eyedatagrid;
+
 /**
  * EyeDataGrid
  * Provides datagrid control features
@@ -47,7 +49,7 @@ class EyeDataGrid
     private $image_path = ''; // Path to images
 
 
-     // Filename of required images
+    // Filename of required images
     public $img_edit = 'edit.png';
     public $img_delete = 'delete.png';
     public $img_create = 'create.png';
@@ -78,16 +80,16 @@ class EyeDataGrid
     const TXT_NORESULTS = 'No results found!';
 
     /**
-    * Constructor
-    *
-    * @param EyeMySQLAdap $_db The Eyesis MySQL Adapter class
-    * @param string $image_path The path to datagrid images
-    */
-    public function __construct(EyeMySQLAdap $_db, $image_path = '')
+     * Constructor
+     *
+     * @param EyeMySQLAdap $_db The Eyesis MySQL Adapter class
+     * @param string $image_path The path to datagrid images
+     */
+    public function __construct(EyeSQLAdaptorInterface $_db, $image_path = '')
     {
         $this->_db = $_db;
 
-        if (empty($image_path)){
+        if (empty($image_path)) {
             $this->image_path = realpath(__DIR__ . '/../../..') . '/images/';
         } else {
             $this->image_path = $image_path;
@@ -104,25 +106,23 @@ class EyeDataGrid
             $this->page = $page;
 
         // Set the order
-        if ($order)
-        {
+        if ($order) {
             list($column, $order) = $this->parseInputCond($order);
             $this->setOrder($column, $order);
         }
 
         // Set the filter
-        if ($filter)
-        {
+        if ($filter) {
             list($column, $value) = $this->parseInputCond($filter);
             $this->setFilter($column, $value);
         }
     }
 
     /**
-    * Hides page drop down selection and replaces it with text
-    *
-    * @param $hide Show or hide the page drop down
-    */
+     * Hides page drop down selection and replaces it with text
+     *
+     * @param $hide Show or hide the page drop down
+     */
     public function hidePageSelectList($hide = true)
     {
         $this->hide_page_list = $hide;
@@ -223,8 +223,10 @@ class EyeDataGrid
      */
     private function setFilter($column, $value)
     {
-        $this->filter = array('Column' => $column,
-                            'Value' => $value);
+        $this->filter = array(
+            'Column' => $column,
+            'Value' => $value
+        );
     }
 
     /**
@@ -236,52 +238,54 @@ class EyeDataGrid
     private function setOrder($column, $order = self::ORDER_DESC)
     {
         $order = ($order == self::ORDER_DESC)
-                    ? self::ORDER_DESC
-                    : self::ORDER_ASC;
+            ? self::ORDER_DESC
+            : self::ORDER_ASC;
 
-        $this->order = array('Column' => $column,
-                            'Order' => $order);
+        $this->order = array(
+            'Column' => $column,
+            'Order' => $order
+        );
     }
 
     /**
-    * Hides a column
-    *
-    * @param string $column The column to be hidden
-    */
+     * Hides a column
+     *
+     * @param string $column The column to be hidden
+     */
     public function hideColumn($column)
     {
         $this->hidden[] = $column;
     }
 
     /**
-    * Change column header caption
-    *
-    * @param string $column The column name
-    * @param string $header The new header caption
-    */
+     * Change column header caption
+     *
+     * @param string $column The column name
+     * @param string $header The new header caption
+     */
     public function setColumnHeader($column, $header)
     {
         $this->header[$column] = $header;
     }
 
     /**
-    * Set a column type
-    *
-    * @param string $column The column to apply the type to
-    * @param integer $type The type of column, use TYPE_* const
-    * @param mixed $criteria Specific value to each column type
-    * @param mixed $criteria_2 Second specific value to each column type
-    */
+     * Set a column type
+     *
+     * @param string $column The column to apply the type to
+     * @param integer $type The type of column, use TYPE_* const
+     * @param mixed $criteria Specific value to each column type
+     * @param mixed $criteria_2 Second specific value to each column type
+     */
     public function setColumnType($column, $type, $criteria = '', $criteria_2 = '')
     {
         $this->type[$column] = array($type, $criteria, $criteria_2);
     }
 
     /**
-    * Sets the maximum amount of rows per page
-    *
-    * @param integer $num Amount of rows per page
-    */
+     * Sets the maximum amount of rows per page
+     *
+     * @param integer $num Amount of rows per page
+     */
     public function setResultsPerPage($num)
     {
         $this->results_per_page = (int) $num;
@@ -289,18 +293,17 @@ class EyeDataGrid
     }
 
     /**
-    * Adds a standard control to a row
-    *
-    * @param integer $type The type of standard control, use STDCTRL_* const
-    * @param string $action The action of the control (onclick code or href link)
-    * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
-    */
+     * Adds a standard control to a row
+     *
+     * @param integer $type The type of standard control, use STDCTRL_* const
+     * @param string $action The action of the control (onclick code or href link)
+     * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
+     */
     public function addStandardControl($type, $action, $action_type = self::TYPE_ONCLICK)
     {
         $action = $this->parseLinkAction($action, $action_type);
 
-        switch ($type)
-        {
+        switch ($type) {
             case self::STDCTRL_EDIT:
                 $this->controls[] = '<a ' . $action . '><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . $this->img_edit)) . '" alt="Edit" title="Edit" class="tbl-control-image"></a>';
                 break;
@@ -314,20 +317,19 @@ class EyeDataGrid
     }
 
     /**
-    * Adds a custom control to a row
-    *
-    * @param integer $type The type of custom control, use CUSCTRL_* const
-    * @param string $action The action of the control (onclick code or href link)
-    * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
-    * @param string $text The textual description of the control
-    * @param string $image_path The location of the image if type is CUSCTRL_IMAGE
-    */
-    public function addCustomControl($type = self::CUSCTRL_TEXT, $action, $action_type = self::TYPE_ONCLICK, $text, $image_src = '')
+     * Adds a custom control to a row
+     *
+     * @param integer $type The type of custom control, use CUSCTRL_* const
+     * @param string $action The action of the control (onclick code or href link)
+     * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
+     * @param string $text The textual description of the control
+     * @param string $image_path The location of the image if type is CUSCTRL_IMAGE
+     */
+    public function addCustomControl($type = self::CUSCTRL_TEXT, $action = '', $action_type = self::TYPE_ONCLICK, $text = '', $image_src = '')
     {
         $action = $this->parseLinkAction($action, $action_type);
 
-        switch ($type)
-        {
+        switch ($type) {
             case self::CUSCTRL_IMAGE:
                 $this->controls[] = '<a ' . $action . '><img src="' . $image_src . '" alt="' . $text . '" title="' . $text . '" class="tbl-control-image"></a>';
                 break;
@@ -338,52 +340,53 @@ class EyeDataGrid
     }
 
     /**
-    * Adds a create control above the table
-    *
-    * @param string $action The action associated to the create (onclick code or href link)
-    * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
-    * @param string $text The textual description of the create
-    */
+     * Adds a create control above the table
+     *
+     * @param string $action The action associated to the create (onclick code or href link)
+     * @param integer $action_type The type of action, use TYPE_ONCLICK or TYPE_HREF
+     * @param string $text The textual description of the create
+     */
     public function showCreateButton($action, $action_type = self::TYPE_ONCLICK, $text = 'New Record')
     {
         $action = $this->parseLinkAction($action, $action_type);
 
-        $this->create_button = array('Action' => $action,
-                                        'Text' => $text);
+        $this->create_button = array(
+            'Action' => $action,
+            'Text' => $text
+        );
     }
 
     /**
-    * Adds ability to select a entire row
-    *
-    * @param string $onclick The JS function to call when a row is clicked
-    */
+     * Adds ability to select a entire row
+     *
+     * @param string $onclick The JS function to call when a row is clicked
+     */
     public function addRowSelect($onclick)
     {
         $this->row_select = $onclick;
     }
 
     /**
-    * Data sanitization and control for filters and ordering
-    *
-    * @param string $in The value to be sanitized and parsed
-    */
+     * Data sanitization and control for filters and ordering
+     *
+     * @param string $in The value to be sanitized and parsed
+     */
     private function parseInputCond($in)
     {
         return explode(':', \preg_replace("[\'\"\<\>\\\]", '%', $in), 2);
     }
 
     /**
-    * Replaces our variables place holders with values
-    *
-    * @param array $row The row associated array
-    * @param string $act The string containing place holders to replace
-    * @return string
-    */
+     * Replaces our variables place holders with values
+     *
+     * @param array $row The row associated array
+     * @param string $act The string containing place holders to replace
+     * @return string
+     */
     private function parseVariables(array $row, $act)
     {
         // The only way we get an array for $act is for parameters from a column type of function
-        if (is_array($act))
-        {
+        if (is_array($act)) {
             // Loop through each passed param and replace variables where necessary
             foreach ($act as $key => $value)
                 $act[$key] = $this->parseVariables($row, $value);
@@ -397,19 +400,19 @@ class EyeDataGrid
 
         preg_match_all("/%([A-Za-z0-9_ \-]*)%/", $act, $vars);
 
-        foreach($vars[0] as $v)
+        foreach ($vars[0] as $v)
             $act = str_replace($v, $row[str_replace('%', '', $v)], $act);
 
         return $act;
     }
 
     /**
-    * Builds a link action
-    *
-    * @param string $action The action
-    * @param integer $action_type The type of actions (onclick code or href link)
-    * @return string
-    */
+     * Builds a link action
+     *
+     * @param string $action The action
+     * @param integer $action_type The type of actions (onclick code or href link)
+     * @return string
+     */
     private function parseLinkAction($action, $action_type)
     {
         if ($action_type == self::TYPE_ONCLICK)
@@ -421,22 +424,24 @@ class EyeDataGrid
     }
 
     /**
-    * Sets the limit by clause
-    *
-    * @param integer $low The minimum row number
-    * @param integer $high The maximum row number
-    */
+     * Sets the limit by clause
+     *
+     * @param integer $low The minimum row number
+     * @param integer $high The maximum row number
+     */
     private function setLimit($low, $high)
     {
-        $this->limit = array('Low' => $low,
-                            'High' => $high);
+        $this->limit = array(
+            'Low' => $low,
+            'High' => $high
+        );
     }
 
     /**
-    * Checks to see if this is an ajax table
-    *
-    * @return boolean
-    */
+     * Checks to see if this is an ajax table
+     *
+     * @return boolean
+     */
     public static function isAjaxUsed()
     {
         if (!empty($_GET['useajax']) and $_GET['useajax'] == 'true')
@@ -446,9 +451,9 @@ class EyeDataGrid
     }
 
     /**
-    * Creates the table header
-    *
-    */
+     * Creates the table header
+     *
+     */
     private function buildHeader()
     {
         // If entire header is hidden, skip all together
@@ -462,25 +467,21 @@ class EyeDataGrid
         $this->column_count = count($headers);
 
         // Add a blank column if the row number is to be shown
-        if ($this->show_row_number)
-        {
+        if ($this->show_row_number) {
             $this->column_count++;
             echo '<td class="tbl-header">&nbsp;</td>';
         }
 
         // Show checkboxes
-        if ($this->show_checkboxes)
-        {
+        if ($this->show_checkboxes) {
             $this->column_count++;
             echo '<td class="tbl-header tbl-checkall"><input type="checkbox" name="checkall" onclick="tblToggleCheckAll()"></td>';
         }
 
         // Loop through each header and output it
-        foreach ($headers as $t)
-        {
+        foreach ($headers as $t) {
             // Skip column if hidden
-            if (\in_array($t, $this->hidden))
-            {
+            if (\in_array($t, $this->hidden)) {
                 $this->column_count--;
                 continue;
             }
@@ -496,34 +497,34 @@ class EyeDataGrid
             else {
                 if ($this->order and $this->order['Column'] == $t)
                     $order = ($this->order['Order'] == self::ORDER_ASC)
-                                        ? self::ORDER_DESC
-                                        : self::ORDER_ASC;
+                        ? self::ORDER_DESC
+                        : self::ORDER_ASC;
                 else
                     $order = self::ORDER_ASC;
 
                 echo '<td class="tbl-header"><a href="javascript:;" onclick="tblSetOrder(\'' . $t . '\', \'' . $order . '\')">' . $header . "</a>";
 
                 // Show the user the order image if set
-                if ($this->order and $this->order['Column'] == $t){
+                if ($this->order and $this->order['Column'] == $t) {
                     echo '&nbsp;<img src=""data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'sort_' . strtolower($this->order['Order']) . '.gif')) . '" class="tbl-order">';
                 }
             }
 
             // Add filters if allowed and only if the column type is not "special"
-            if ($this->allow_filters and
+            if (
+                $this->allow_filters and
                 (!isset($this->type[$t]) or
                     !in_array($this->type[$t][0], array(
-                                        self::TYPE_ARRAY,
-                                        self::TYPE_IMAGE,
-                                        self::TYPE_FUNCTION,
-                                        self::TYPE_DATE,
-                                        self::TYPE_CHECK,
-                                        self::TYPE_CUSTOM,
-                                        self::TYPE_PERCENT
-                                        ))))
-            {
-                if ($this->filter and $this->filter['Column'] == $t and !empty($this->filter['Value']))
-                {
+                        self::TYPE_ARRAY,
+                        self::TYPE_IMAGE,
+                        self::TYPE_FUNCTION,
+                        self::TYPE_DATE,
+                        self::TYPE_CHECK,
+                        self::TYPE_CUSTOM,
+                        self::TYPE_PERCENT
+                    )))
+            ) {
+                if ($this->filter and $this->filter['Column'] == $t and !empty($this->filter['Value'])) {
                     $filter_display = 'block';
                     $filter_value = $this->filter['Value'];
                 } else {
@@ -531,15 +532,14 @@ class EyeDataGrid
                     $filter_value = '';
                 }
 
-                echo '<a href="javascript:;" onclick="tblShowHideFilter(\'' . $t . '\')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'filter.gif')) . '" class="tbl-filter-image"></a><br><div class="tbl-filter-box" id="filter-' . $t . '" style="display:' . $filter_display . '"><input type="text" size="6" id="filter-value-' . $t . '" value="'.$filter_value.'">&nbsp;<a href="javascript:;" onclick="tblSetFilter(\'' . $t . '\')">filter</a></div>';
+                echo '<a href="javascript:;" onclick="tblShowHideFilter(\'' . $t . '\')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'filter.gif')) . '" class="tbl-filter-image"></a><br><div class="tbl-filter-box" id="filter-' . $t . '" style="display:' . $filter_display . '"><input type="text" size="6" id="filter-value-' . $t . '" value="' . $filter_value . '">&nbsp;<a href="javascript:;" onclick="tblSetFilter(\'' . $t . '\')">filter</a></div>';
             }
 
             echo '</td>';
         }
 
         // If we have controls, add a blank column
-        if (count($this->controls) > 0)
-        {
+        if (count($this->controls) > 0) {
             $this->column_count++;
             echo '<td class="tbl-header">&nbsp;</td>';
         }
@@ -548,12 +548,12 @@ class EyeDataGrid
     }
 
     /**
-    * Creates the table footer
-    *
-    * @param integer $shown The amounts of rows being shown in the current page
-    * @param integer $first The row number of the first row
-    * @param integer $last The row number of the last row
-    */
+     * Creates the table footer
+     *
+     * @param integer $shown The amounts of rows being shown in the current page
+     * @param integer $first The row number of the first row
+     * @param integer $last The row number of the last row
+     */
     private function buildFooter($shown, $first = 0, $last = 0)
     {
         // Skip adding the footer if it is hidden
@@ -570,34 +570,32 @@ class EyeDataGrid
         echo '</td><td wdith="33%" class="tbl-pages">';
 
         // Handle results that span multiple pages
-        if ($this->row_count > $this->results_per_page)
-        {
-            if ($this->page > 1){
-                echo '<a href="javascript:;" onclick="tblSetPage(1)"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_first.gif')) . '" class="tbl-arrows" alt="&lt;&lt;" title="First Page"></a><a href="javascript:;" onclick="tblSetPage(' . ($this->page - 1) . ')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_left.gif')) .'" class="tbl-arrows" alt="&lt;" title="Previous Page"></a>';
+        if ($this->row_count > $this->results_per_page) {
+            if ($this->page > 1) {
+                echo '<a href="javascript:;" onclick="tblSetPage(1)"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_first.gif')) . '" class="tbl-arrows" alt="&lt;&lt;" title="First Page"></a><a href="javascript:;" onclick="tblSetPage(' . ($this->page - 1) . ')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_left.gif')) . '" class="tbl-arrows" alt="&lt;" title="Previous Page"></a>';
             } else {
                 echo '<img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_first_disabled.gif')) . '" class="tbl-arrows" alt="&lt;&lt;" title="First Page"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_left_disabled.gif')) . '" class="tbl-arrows" alt="&lt;" title="Previous Page">';
             }
 
             // Special thanks to ionut for this next few lines
             $startpage = ($this->page > 10)
-                                        ? $this->page - 10
-                                        : 1;
-            
-            $endpage = (($pages - 10) > $this->page)
-                                        ? $this->page + 10
-                                        : $pages;
+                ? $this->page - 10
+                : 1;
 
-      // Only display a portion of the selectable pages
-      for ($i = $startpage; $i <= $endpage; $i++)
-            {
-                if ($i == $this->page){
+            $endpage = (($pages - 10) > $this->page)
+                ? $this->page + 10
+                : $pages;
+
+            // Only display a portion of the selectable pages
+            for ($i = $startpage; $i <= $endpage; $i++) {
+                if ($i == $this->page) {
                     echo '&nbsp;<span class="page-selected">' . $i . '</span>&nbsp;';
                 } else {
                     echo '&nbsp;<a href="javascript:;" onclick="tblSetPage(' . $i . ')">' . $i . '</a>&nbsp;';
                 }
             }
 
-            if ($this->page < $pages){
+            if ($this->page < $pages) {
                 echo '<a href="javascript:;" onclick="tblSetPage(' . ($this->page + 1) . ')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_right.gif')) . '" class="tbl-arrows" alt="&gt;" title="Next Page"></a><a href="javascript:;" onclick="tblSetPage(' . $pages . ')"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_last.gif')) . '" class="tbl-arrows" alt="&gt;&gt;" title="Last Page"></a>';
             } else {
                 echo '<img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_right_disabled.gif')) . '" class="tbl-arrows" alt="&gt;" title="Next Page"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . 'arrow_last_disabled.gif')) . '" class="tbl-arrows" alt="&gt;&gt;" title="Last Page">';
@@ -607,15 +605,12 @@ class EyeDataGrid
         echo '</td><td width="33%" class="tbl-page">';
 
         // Only show page section if we have more than one page
-        if ($pages > 0)
-        {
+        if ($pages > 0) {
             echo 'Page ';
-            if (!$this->hide_page_list and $pages > 1)
-            {
+            if (!$this->hide_page_list and $pages > 1) {
                 // Create a selectable drop down list for pages
                 echo '<select name="tbl-page" onchange="tblSetPage(this.options[this.selectedIndex].value)">';
-                for ($x = 1; $x <= $pages; $x++)
-                {
+                for ($x = 1; $x <= $pages; $x++) {
                     echo '<option value="' . $x . '"';
                     if ($x == $this->page)
                         echo ' selected="selected"';
@@ -632,26 +627,25 @@ class EyeDataGrid
     }
 
     /**
-    * Builds row controls
-    *
-    * @param array $row The row associated array
-    */
+     * Builds row controls
+     *
+     * @param array $row The row associated array
+     */
     private function buildControls(array $row)
     {
-            // Add controls as needed
-            if (count($this->controls) > 0)
-            {
-                echo '<td class="tbl-controls">';
-                foreach ($this->controls as $ctl)
-                    echo $this->parseVariables($row, $ctl);
-                echo '</td>';
-            }
+        // Add controls as needed
+        if (count($this->controls) > 0) {
+            echo '<td class="tbl-controls">';
+            foreach ($this->controls as $ctl)
+                echo $this->parseVariables($row, $ctl);
+            echo '</td>';
+        }
     }
 
     /**
-    * Outputs the datagrid to the screen
-    *
-    */
+     * Outputs the datagrid to the screen
+     *
+     */
     public function printTable()
     {
         // Set the limit
@@ -662,8 +656,7 @@ class EyeDataGrid
         if ($this->select_where)
             $filter_query .= "(" . $this->select_where . ")";
 
-        if ($this->allow_filters and $this->filter)
-        {
+        if ($this->allow_filters and $this->filter) {
             if (!strstr($this->filter['Value'], '%'))
                 $filter_value = '%' . $this->filter['Value'] . '%';
             else
@@ -674,7 +667,7 @@ class EyeDataGrid
 
             $filter_query .= "(`" . $this->filter['Column'] . "` LIKE '" . $filter_value . "')";
         }
-        
+        $filter = '';
         if ($filter_query)
             $filter = 'WHERE ' . $filter_query;
 
@@ -694,8 +687,7 @@ class EyeDataGrid
 
         // Inform the user of any errors. Commonly caused when a column is specified in the filter or order clause that does not exist
         $this->result = $this->_db->query($query . ' ' . $order . ' ' . $limit, false);
-        if (!$this->result)
-        {
+        if (!$this->result) {
             echo '<div style="color: red; font-weight: bold; border: 2px solid red; padding: 10px;">Oops! We ran into a problem while trying to output the table. <a href="javascript:;" onclick="tblReset()">Click here</a> to reset the table or <a href="javascript:;" onclick="alert(\'' . \preg_replace('[\'"]', '', $this->_db->error()) . '\')">here</a> to review the error.</div>';
             return;
         }
@@ -703,8 +695,7 @@ class EyeDataGrid
         // Count the number of rows without the limit clause
         $this->row_count = (int) $this->_db->selectOneValue('COUNT(*)', $this->select_table, $filter_query); // Old code which does not support large data sets: $this->_db->countRows($query);
 
-        if (!$this->isAjaxUsed())
-        {
+        if (!$this->isAjaxUsed()) {
             // Print out required javascript functions
             $this->printJavascript();
             echo '<script type="text/javascript">function updateTable() { window.location = "?" + params; }</script>';
@@ -718,7 +709,7 @@ class EyeDataGrid
 
         // Output the reset button
         if ($this->reset_button)
-            echo '<span class="tbl-reset"><a href="javascript:;" onclick="tblReset()" title="' . $this->reset_button .'"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . $this->img_reset)) . '" class="tbl-reset-image">' . $this->reset_button .'</a></span>';
+            echo '<span class="tbl-reset"><a href="javascript:;" onclick="tblReset()" title="' . $this->reset_button . '"><img src="data:imagem/gif;base64,' . base64_encode(file_get_contents($this->image_path . $this->img_reset)) . '" class="tbl-reset-image">' . $this->reset_button . '</a></span>';
 
         echo '<table class="tbl">';
 
@@ -729,10 +720,11 @@ class EyeDataGrid
         if ($this->row_count == 0)
             echo '<tr><td colspan="' . $this->column_count . '" class="tbl-noresults">' . self::TXT_NORESULTS . '</td></tr>';
         else {
-            $i = 0; $first = 0; $last = 0;
+            $i = 0;
+            $first = 0;
+            $last = 0;
 
-            while ($row = $this->_db->fetchAssoc($this->result))
-            {
+            while ($row = $this->_db->fetchAssoc($this->result)) {
                 echo '<tr class="tbl-row tbl-row-' . (($i % 2) ? 'odd' : 'even'); // Switch up the bgcolors on each row
 
                 // Handle row selects
@@ -742,8 +734,8 @@ class EyeDataGrid
                 echo '">';
 
                 $line = ($this->page == 1)
-                            ? $i + 1
-                            : $i + 1 + (($this->page - 1) * $this->results_per_page);
+                    ? $i + 1
+                    : $i + 1 + (($this->page - 1) * $this->results_per_page);
 
                 $last = $line; // Last line
                 if ($first == 0)
@@ -752,23 +744,21 @@ class EyeDataGrid
                 if ($this->show_row_number)
                     echo '<td class="tbl-row-num">' . $line . '</td>';
 
-                if ($this->show_checkboxes){
-                    echo '<td align="center"><input type="checkbox" class="tbl-checkbox" id="checkbox" name="tbl-checkbox" value="' . $row[$this->primary] . '"></td>';
+                if ($this->show_checkboxes) {
+                    $value = $this->primary ? $row[$this->primary] : '';
+                    echo '<td align="center"><input type="checkbox" class="tbl-checkbox" id="checkbox" name="tbl-checkbox" value="' . $value . '"></td>';
                 }
 
-                foreach ($row as $key => $value)
-                {
+                foreach ($row as $key => $value) {
                     // Skip if column is hidden
                     if (in_array($key, $this->hidden))
                         continue;
 
                     // Apply a column type to the value
-                    if (array_key_exists($key, $this->type))
-                    {
+                    if (array_key_exists($key, $this->type)) {
                         list($type, $criteria, $criteria_2) = $this->type[$key];
 
-                        switch ($type)
-                        {
+                        switch ($type) {
                             case self::TYPE_ONCLICK:
                                 if ($value)
                                     $value = '<a href="javascript:;" onclick="' . $this->parseVariables($row, $criteria) . '">' . $value . '</a>';
@@ -830,7 +820,7 @@ class EyeDataGrid
                             default:
                                 // Invalid column type
                                 break;
-                            }
+                        }
                     }
 
                     echo '<td class="tbl-cell">' . $value . '</td>';
@@ -856,12 +846,12 @@ class EyeDataGrid
      *
      * @param string $responce Responce script
      */
-    public function useAjaxTable($responce = '')
+    public  function useAjaxTable($responce = '')
     {
         $this->printJavascript();
 
         // If no responce script is set, use the current script
-        if (empty($responce)){
+        if (empty($responce)) {
             $responce = $_SERVER['PHP_SELF'];
         }
 
@@ -883,9 +873,9 @@ class EyeDataGrid
     }
 
     /**
-    * Prints the required JS functions
-    *
-    */
+     * Prints the required JS functions
+     *
+     */
     public function printJavascript()
     {
         $page = $this->page;

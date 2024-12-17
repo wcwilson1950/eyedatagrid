@@ -1,15 +1,12 @@
 <?php
-use Fgsl\Eyedatagrid\EyeMySQLAdap;
+
+use Fgsl\Eyedatagrid\EyeDataFactory;
 use Fgsl\Eyedatagrid\EyeDataGrid;
+
 require 'vendor/autoload.php';
 
-$config = require 'config/local.php';
-
-// Load the database adapter
-$db = new EyeMySQLAdap($config['host'],$config['user'],$config['password'],$config['db']);
-
-// Load the datagrid class
-$x = new EyeDataGrid($db);
+// Load the grid
+$x = EyeDataFactory::create(EyeDataFactory::SQLITE);
 
 // Set the query, select all rows from the people table
 $x->setQuery("*", "people");
@@ -40,24 +37,27 @@ $x->setResultsPerPage(4);
 $x->hideOrder();
 ?>
 <html>
+
 <head>
-<title>EyeDataGrid Example 3</title>
-<link href="table.css" rel="stylesheet" type="text/css">
+    <title>EyeDataGrid Example 3</title>
+    <link href="table.css" rel="stylesheet" type="text/css">
 </head>
+
 <body>
-<h1>Other options</h1>
-<p>From the previous example a few things have changed:</p>
-<ul>
-	<li>Row numbers are displayed</li>
-	<li>Check boxes are available for each row</li>
-	<li>The maximun number of results per page is now 4</li>
-	<li>A reset, and create control was added to the top of the data grid</li>
-	<li>Added controls edit and delete controls to each row</li>
-	<li>Ordering data was disabled</li>
-</ul>
-<?php
-// Print the table
-$x->printTable();
-?>
+    <h1>Other options</h1>
+    <p>From the previous example a few things have changed:</p>
+    <ul>
+        <li>Row numbers are displayed</li>
+        <li>Check boxes are available for each row</li>
+        <li>The maximun number of results per page is now 4</li>
+        <li>A reset, and create control was added to the top of the data grid</li>
+        <li>Added controls edit and delete controls to each row</li>
+        <li>Ordering data was disabled</li>
+    </ul>
+    <?php
+	// Print the table
+	$x->printTable();
+	?>
 </body>
+
 </html>
